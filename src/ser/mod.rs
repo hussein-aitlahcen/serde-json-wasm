@@ -20,6 +20,13 @@ pub type Result<T> = ::core::result::Result<T, Error>;
 pub enum Error {
     /// Buffer is full
     BufferFull,
+
+    /// Unreachable Code
+    Unreachable(&'static str),
+
+    /// Custom error message from serde
+    Custom(String),
+
     #[doc(hidden)]
     __Extensible,
 }
@@ -48,7 +55,16 @@ impl error::Error for Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Buffer is full")
+        write!(
+            f,
+            "{}",
+            match self {
+                Error::BufferFull => "Buffer is full",
+                Error::Unreachable(msg) => msg,
+                Error::Custom(msg) => &msg,
+                _ => "Unknown ser error",
+            }
+        )
     }
 }
 
@@ -181,15 +197,15 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_f32(self, _v: f32) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_f64(self, _v: f64) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_char(self, _v: char) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_str(self, v: &str) -> Result<Self::Ok> {
@@ -200,7 +216,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_bytes(self, _v: &[u8]) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_none(self) -> Result<Self::Ok> {
@@ -216,11 +232,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_unit(self) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_unit_struct(self, _name: &'static str) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_unit_variant(
@@ -240,7 +256,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     where
         T: ser::Serialize,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_newtype_variant<T: ?Sized>(
@@ -253,7 +269,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     where
         T: ser::Serialize,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_seq(self, _len: Option<usize>) -> Result<Self::SerializeSeq> {
@@ -271,7 +287,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         _name: &'static str,
         _len: usize,
     ) -> Result<Self::SerializeTupleStruct> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_tuple_variant(
@@ -281,11 +297,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         _variant: &'static str,
         _len: usize,
     ) -> Result<Self::SerializeTupleVariant> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_map(self, _len: Option<usize>) -> Result<Self::SerializeMap> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_struct(self, _name: &'static str, _len: usize) -> Result<Self::SerializeStruct> {
@@ -301,14 +317,14 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         _variant: &'static str,
         _len: usize,
     ) -> Result<Self::SerializeStructVariant> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn collect_str<T: ?Sized>(self, _value: &T) -> Result<Self::Ok>
     where
         T: fmt::Display,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 }
 
@@ -333,11 +349,11 @@ where
 }
 
 impl ser::Error for Error {
-    fn custom<T>(_msg: T) -> Self
+    fn custom<T>(msg: T) -> Self
     where
         T: fmt::Display,
     {
-        unreachable!()
+        Error::Custom(msg.to_string())
     }
 }
 
@@ -348,11 +364,11 @@ impl ser::SerializeTupleStruct for Unreachable {
     type Error = Error;
 
     fn serialize_field<T: ?Sized>(&mut self, _value: &T) -> Result<()> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn end(self) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 }
 
@@ -361,11 +377,11 @@ impl ser::SerializeTupleVariant for Unreachable {
     type Error = Error;
 
     fn serialize_field<T: ?Sized>(&mut self, _value: &T) -> Result<()> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn end(self) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 }
 
@@ -377,18 +393,18 @@ impl ser::SerializeMap for Unreachable {
     where
         T: ser::Serialize,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn serialize_value<T: ?Sized>(&mut self, _value: &T) -> Result<()>
     where
         T: ser::Serialize,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn end(self) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 }
 
@@ -400,11 +416,11 @@ impl ser::SerializeStructVariant for Unreachable {
     where
         T: ser::Serialize,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 
     fn end(self) -> Result<Self::Ok> {
-        unreachable!()
+        Err(Error::Unreachable("unreachable ser"))
     }
 }
 

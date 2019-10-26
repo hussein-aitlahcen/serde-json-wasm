@@ -85,8 +85,8 @@ impl error::Error for Error {
 
 impl de::Error for Error {
     fn custom<T>(msg: T) -> Self
-        where
-            T: fmt::Display,
+    where
+        T: fmt::Display,
     {
         Error::Custom(msg.to_string())
     }
@@ -814,10 +814,13 @@ mod tests {
 
         // wrong number of args
         match crate::from_str::<Xy>(r#"[10]"#) {
-            Err(super::Error::Custom(_)) => {},
+            Err(super::Error::Custom(_)) => {}
             _ => panic!("expect custom error"),
         }
-        assert_eq!(crate::from_str::<Xy>(r#"[10, 20, 30]"#), Err(crate::de::Error::TrailingCharacters));
+        assert_eq!(
+            crate::from_str::<Xy>(r#"[10, 20, 30]"#),
+            Err(crate::de::Error::TrailingCharacters)
+        );
     }
 
     #[test]
@@ -845,7 +848,9 @@ mod tests {
         );
 
         assert_eq!(
-            crate::from_str(r#"{ "temperature": 20, "source": { "station": "dock", "sensors": ["front", "back"] } }"#),
+            crate::from_str(
+                r#"{ "temperature": 20, "source": { "station": "dock", "sensors": ["front", "back"] } }"#
+            ),
             Ok(Temperature { temperature: 20 })
         );
 
