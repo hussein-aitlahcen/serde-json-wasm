@@ -63,6 +63,9 @@ pub enum Error {
     /// JSON has a comma after the last value in an array or map.
     TrailingComma,
 
+    /// Unreachable Code
+    Unreachable(&'static str),
+
     /// Custom error message from serde
     Custom(String),
 
@@ -125,6 +128,7 @@ impl fmt::Display for Error {
                      value."
                 }
                 Error::TrailingComma => "JSON has a comma after the last value in an array or map.",
+                Error::Unreachable(msg) => msg,
                 Error::Custom(msg) => &msg,
                 _ => "Invalid JSON",
             }
@@ -339,7 +343,7 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
@@ -423,21 +427,21 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     fn deserialize_f64<V>(self, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     fn deserialize_char<V>(self, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
@@ -476,7 +480,7 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     /// Unsupported
@@ -484,7 +488,7 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
@@ -506,7 +510,7 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     /// Unsupported. Use a more specific deserialize_* method
@@ -514,7 +518,7 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     /// Unsupported. We can’t parse newtypes because we don’t know the underlying type.
@@ -522,7 +526,7 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
@@ -568,7 +572,7 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        Err(Error::Unreachable("unreachable here"))
     }
 
     fn deserialize_struct<V>(
