@@ -339,7 +339,7 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        panic!("gotcha")
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
@@ -902,6 +902,7 @@ mod tests {
     #[test]
     fn adjacent() {
         let c: AdjacentDemo = crate::from_str(r#"{"method": "open", "params": {"name": "my_file"}}"#).unwrap();
+//        let c: AdjacentDemo = crate::from_str(r#"{"open": {"name": "my_file"}}"#).unwrap();
         assert_eq!(AdjacentDemo::Open{name: "my_file".to_string()}, c);
     }
 
