@@ -891,6 +891,21 @@ mod tests {
         assert_eq!(Address("johnny".to_string()), c.address);
     }
 
+    #[derive(Deserialize, Clone, Debug, PartialEq)]
+    #[serde(tag = "method", content = "params")]
+    #[serde(rename_all = "lowercase")]
+    pub enum AdjacentDemo {
+        Open{name: String},
+        Write{fd: i32, text: String},
+    }
+
+    #[test]
+    fn adjacent() {
+        let c: AdjacentDemo = crate::from_str(r#"{"method": "open", "params": {"name": "my_file"}}"#).unwrap();
+        assert_eq!(AdjacentDemo::Open{name: "my_file".to_string()}, c);
+    }
+
+
     #[test]
     fn deserialize_optional_vector() {
         #[derive(Debug, Deserialize, PartialEq)]
