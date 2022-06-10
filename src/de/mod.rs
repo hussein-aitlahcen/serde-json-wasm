@@ -576,14 +576,23 @@ impl<'a, 'de> de::Deserializer<'de> for &'a mut Deserializer<'de> {
         self.deserialize_seq(visitor)
     }
 
-    /// Unsupported. Can’t make an arbitrary-sized map in no-std. Use a struct with a
-    /// known format, or implement a custom map deserializer / visitor:
-    /// https://serde.rs/deserialize-map.html
-    fn deserialize_map<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_map<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        let peek = self.parse_whitespace().ok_or(Error::EofWhileParsingValue)?;
+
+        if peek == b'{' {
+            self.eat_char();
+
+            let ret = visitor.visit_map(MapAccess::new(self))?;
+
+            self.end_map()?;
+
+            Ok(ret)
+        } else {
+            Err(Error::InvalidType)
+        }
     }
 
     fn deserialize_struct<V>(
@@ -1244,6 +1253,24 @@ mod tests {
                 log: None,
                 messages: Vec::new()
             })
+        );
+    }
+
+    #[test]
+    fn btree() {
+        assert_eq!(
+            from_str(r#" { "x": "1", "y": "100" } "#),
+            Ok(std::collections::BTreeMap::from([
+                ("x".to_string(), 1u128),
+                ("y".to_string(), 100u128)
+            ]))
+        );
+        assert_eq!(
+            from_str(r#" { "x": 2, "y": 10000 } "#),
+            Ok(std::collections::BTreeMap::from([
+                ("x".to_string(), 2u64),
+                ("y".to_string(), 10000u64)
+            ]))
         );
     }
 
