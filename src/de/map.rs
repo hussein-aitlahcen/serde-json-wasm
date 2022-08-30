@@ -211,13 +211,13 @@ impl<'de, 'a> de::Deserializer<'de> for MapKey<'a, 'de> {
 
     fn deserialize_newtype_struct<V>(
         self,
-        _name: &'static str,
-        _visitor: V,
+        name: &'static str,
+        visitor: V,
     ) -> Result<V::Value, Self::Error>
     where
         V: Visitor<'de>,
     {
-        unreachable!()
+        self.de.deserialize_newtype_struct(name, visitor)
     }
 
     fn deserialize_seq<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
