@@ -30,9 +30,7 @@ impl<'a> ser::SerializeMap for SerializeMap<'a> {
             self.ser.buf.push(b',');
         }
         self.first = false;
-        self.ser.buf.push(b'"');
         key.serialize(&mut *self.ser)?;
-        self.ser.buf.push(b'"');
         self.ser.buf.extend_from_slice(b":");
         Ok(())
     }
